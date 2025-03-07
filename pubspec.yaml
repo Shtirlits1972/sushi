@@ -1,0 +1,28 @@
+name: sushi_sql
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_launcher_icons: ^0.14.3
+  flutter_lints: ^5.0.0
+  get: ^4.7.2
+  intl: ^0.20.2
+  sqflite: ^2.4.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/sushi1.png"  
+
+flutter:
+  uses-material-design: true
