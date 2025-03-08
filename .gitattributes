@@ -1,2 +1,8 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Указываем, что файлы с расширением .dart должны считаться Dart
+*.dart linguist-language=Dart
+
+# Игнорируем файлы с расширением .yaml при определении языка
+*.yaml linguist-detectable=false
+
+# Игнорируем все файлы в папке "vendor"
+vendor/* linguist-vendored
