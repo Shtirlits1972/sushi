@@ -22,7 +22,6 @@ class IngridientController extends GetxController {
   // Обновить ингредиент
   void updateIngridient(Ingridient newIngridient) {
     for (int i = 0; i < ingridients.length; i++) {
-      var t = 0;
       if (ingridients[i].id == newIngridient.id) {
         ingridients[i] = newIngridient;
         break;
