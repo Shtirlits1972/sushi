@@ -33,13 +33,15 @@ class RecipeCrud {
   }
 
   static Future del(int id) async {
-    String command = 'DELETE FROM [Recipe] WHERE id = ?';
+    String row_del = 'DELETE FROM [RecipeRow] WHERE recipeId = ? ; ';
+    String recipe_del = '   DELETE FROM [Recipe] WHERE id = ?; ';
     final db = await _getDatabase();
     try {
-      RecipeRowCrud.delByRecipeId(id).then((val) async {
-        int count = await db.rawDelete(command, [id]);
-        print('row delete = $count ');
-      });
+      // await RecipeRowCrud.delByRecipeId(id);
+      int count1 = await db.rawDelete(row_del, [id]);
+      int count2 = await db.rawDelete(recipe_del, [id]);
+
+      print('row delete = $count1, recipe delete = $count2 ');
     } catch (e) {
       print(e);
       rethrow;

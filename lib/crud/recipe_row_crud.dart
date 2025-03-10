@@ -19,6 +19,7 @@ class RecipeRowCrud {
           'INSERT INTO [RecipeRow] (recipeId, ingridientId, weight) VALUES (?,?,?); ',
           [model.recipeId, model.ingridientId, model.weight],
         );
+        var y = 0;
         return RecipeRow(
           id,
           model.recipeId,
@@ -50,19 +51,19 @@ class RecipeRowCrud {
     }
   }
 
-  static Future delByRecipeId(int recipeId) async {
-    String command = 'DELETE FROM [RecipeRow] WHERE recipeId = ?';
-    final db = await _getDatabase();
-    try {
-      int count = await db.rawDelete(command, [recipeId]);
-      print('row delete = $count ');
-    } catch (e) {
-      print(e);
-      rethrow;
-    } finally {
-      await db.close();
-    }
-  }
+  // static Future delByRecipeId(int recipeId) async {
+  //   String command = 'DELETE FROM [RecipeRow] WHERE recipeId = ?';
+  //   final db = await _getDatabase();
+  //   try {
+  //     int count = await db.rawDelete(command, [recipeId]);
+  //     print('row delete = $count ');
+  //   } catch (e) {
+  //     print(e);
+  //     rethrow;
+  //   } finally {
+  //     await db.close();
+  //   }
+  // }
 
   static Future<RecipeRow> edit(RecipeRow model) async {
     String command =

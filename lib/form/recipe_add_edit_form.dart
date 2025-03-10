@@ -36,14 +36,33 @@ class _RecipeAddEditFormState extends State<RecipeAddEditForm> {
 
         actions: [
           IconButton(
-            onPressed: () {
-              Navigator.pushNamed(
-                context,
-                RecipeRowAddEdit.route,
-                arguments: RecipeRow(0, widget.model.id, 0, '', 0),
-              ).then((val) {
-                setState(() {});
-              });
+            onPressed: () async {
+              if (widget.model.id == 0) {
+                widget.model.name = nameController.text;
+                RecipeCrud.add(widget.model).then((value) {
+                  //   setState(() {
+                  widget.model = value;
+                  recipeGetX.addRecipe(value);
+                  //     });
+
+                  var f = 0;
+                  Navigator.pushNamed(
+                    context,
+                    RecipeRowAddEdit.route,
+                    arguments: RecipeRow(0, widget.model.id, 0, '', 0),
+                  ).then((val) {
+                    setState(() {});
+                  });
+                });
+              } else {
+                Navigator.pushNamed(
+                  context,
+                  RecipeRowAddEdit.route,
+                  arguments: RecipeRow(0, widget.model.id, 0, '', 0),
+                ).then((val) {
+                  setState(() {});
+                });
+              }
             },
             icon: Icon(Icons.add_circle_rounded),
           ),
@@ -92,6 +111,7 @@ class _RecipeAddEditFormState extends State<RecipeAddEditForm> {
                                       widget.model.RecipeRows[index].id,
                                 );
                                 recipeGetX.updateRecipe(widget.model);
+                                setState(() {});
                               });
 
                               ScaffoldMessenger.of(context).showSnackBar(

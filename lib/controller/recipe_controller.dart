@@ -23,6 +23,7 @@ class RecipeController extends GetxController {
   //  обновить RecipeRow
   void updateRow(RecipeRow row) {
     for (int i = 0; i < recipes.value.length; i++) {
+      var r = 0;
       if (recipes.value[i].id == row.recipeId) {
         bool flag = true;
         for (int j = 0; j < recipes.value[i].RecipeRows.length; j++) {

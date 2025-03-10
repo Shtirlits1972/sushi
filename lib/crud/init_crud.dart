@@ -8,7 +8,7 @@ class InitCrud {
         'CREATE TABLE [Ingridient](  [id] INTEGER PRIMARY KEY AUTOINCREMENT,  [name] NVARCHAR );  ';
 
     String RecipeTab =
-        'CREATE TABLE [Recipe]( [id] INTEGER PRIMARY KEY AUTOINCREMENT,  [name] NVARCHAR );   ';
+        'CREATE TABLE [Recipe] ( [id] INTEGER PRIMARY KEY AUTOINCREMENT,  [name] NVARCHAR );   ';
 
     String RecipeRow =
         '      CREATE TABLE [RecipeRow](  ' +

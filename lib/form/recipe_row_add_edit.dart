@@ -84,6 +84,8 @@ class _RecipeRowAddEditState extends State<RecipeRowAddEdit> {
                           widget.recipeRow.weight = double.parse(
                             weightController.text,
                           );
+                          print(widget.recipeRow);
+                          var t = 0;
                         });
                       },
                     );
@@ -130,7 +132,10 @@ class _RecipeRowAddEditState extends State<RecipeRowAddEdit> {
                                 widget.recipeRow.name,
                                 weight,
                               );
+
                               print(row);
+
+                              var f3 = 0;
 
                               if (widget.recipeRow.id == 0) {
                                 RecipeRowCrud.add(row).then((val) {

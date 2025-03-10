@@ -94,23 +94,21 @@ class _RecipeFormState extends State<RecipeForm> {
                       //===============================================
 
                       return Dismissible(
-                        onDismissed: (direction) async {
-                          await RecipeCrud.del(
-                            controllerGetX.recipes[index].id,
-                          );
+                        onDismissed: (direction) {
+                          String name = controllerGetX.recipes[index].name;
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            snackBarOK(
-                              '${controllerGetX.recipes[index].name} is deleted!',
-                            ),
-                          );
+                          RecipeCrud.del(controllerGetX.recipes[index].id);
 
-                          print('remuve: ${controllerGetX.recipes[index]}');
                           setState(() {
                             controllerGetX.removeRecipe(
                               controllerGetX.recipes[index].id,
                             );
                           });
+
+                          print('remuve: $name');
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(snackBarOK('$name is deleted!'));
                         },
                         key: Key(controllerGetX.recipes[index].id.toString()),
                         child: InkWell(
