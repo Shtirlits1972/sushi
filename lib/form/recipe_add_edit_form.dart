@@ -39,29 +39,21 @@ class _RecipeAddEditFormState extends State<RecipeAddEditForm> {
             onPressed: () async {
               if (widget.model.id == 0) {
                 widget.model.name = nameController.text;
-                RecipeCrud.add(widget.model).then((value) {
-                  //   setState(() {
-                  widget.model = value;
-                  recipeGetX.addRecipe(value);
-                  //     });
+                widget.model = await RecipeCrud.add(widget.model);
+                recipeGetX.addRecipe(widget.model);
+                setState(() {});
+              }
 
-                  var f = 0;
-                  Navigator.pushNamed(
-                    context,
-                    RecipeRowAddEdit.route,
-                    arguments: RecipeRow(0, widget.model.id, 0, '', 0),
-                  ).then((val) {
-                    setState(() {});
-                  });
-                });
-              } else {
-                Navigator.pushNamed(
-                  context,
-                  RecipeRowAddEdit.route,
-                  arguments: RecipeRow(0, widget.model.id, 0, '', 0),
-                ).then((val) {
-                  setState(() {});
-                });
+              var row = await Navigator.pushNamed(
+                context,
+                RecipeRowAddEdit.route,
+                arguments: RecipeRow(0, widget.model.id, 0, '', 0),
+              );
+
+              if (row != null) {
+                print(row);
+                var f22 = 0;
+                setState(() {});
               }
             },
             icon: Icon(Icons.add_circle_rounded),

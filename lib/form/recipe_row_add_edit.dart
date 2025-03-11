@@ -29,6 +29,7 @@ class _RecipeRowAddEditState extends State<RecipeRowAddEdit> {
 
       if (widget.recipeRow.ingridientId == 0) {
         widget.recipeRow.ingridientId = ingridientGetX.ingridients.first.id;
+        widget.recipeRow.name = ingridientGetX.ingridients.first.name;
       }
     });
   }
@@ -140,16 +141,16 @@ class _RecipeRowAddEditState extends State<RecipeRowAddEdit> {
                               if (widget.recipeRow.id == 0) {
                                 RecipeRowCrud.add(row).then((val) {
                                   var t2 = 0;
-                                  recipeGetX.updateRow(val);
+                                  recipeGetX.updateRecipeRow(val);
 
-                                  Navigator.pop(context);
+                                  Navigator.pop(context, [val]);
                                 });
                               } else {
                                 RecipeRowCrud.edit(row).then((val) {
                                   var t3 = 0;
-                                  recipeGetX.updateRow(val);
+                                  recipeGetX.updateRecipeRow(val);
 
-                                  Navigator.pop(context);
+                                  Navigator.pop(context, [val]);
                                 });
                               }
                             },
@@ -166,7 +167,7 @@ class _RecipeRowAddEditState extends State<RecipeRowAddEdit> {
                               ),
                             ),
                             onPressed: () {
-                              Navigator.pop(context);
+                              Navigator.pop(context, [null]);
                             },
                             child: Text('Cancel'),
                           ),
