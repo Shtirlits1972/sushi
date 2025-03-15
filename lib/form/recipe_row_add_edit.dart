@@ -27,6 +27,7 @@ class _RecipeRowAddEditState extends State<RecipeRowAddEdit> {
     IngridientCrud.getAll().then((value) {
       ingridientGetX.setIngridient(value);
 
+      //  если добавляем - то добавляем id и name
       if (widget.recipeRow.ingridientId == 0) {
         widget.recipeRow.ingridientId = ingridientGetX.ingridients.first.id;
         widget.recipeRow.name = ingridientGetX.ingridients.first.name;
@@ -77,17 +78,21 @@ class _RecipeRowAddEditState extends State<RecipeRowAddEdit> {
                       value: ingridientGetX.ingridients[index].id,
                       groupValue: widget.recipeRow.ingridientId,
                       onChanged: (value) {
+                        //=================  onChanged  ===========================
                         print(value);
                         setState(() {
                           widget.recipeRow.ingridientId = value!;
                           widget.recipeRow.name =
                               ingridientGetX.ingridients[index].name;
-                          widget.recipeRow.weight = double.parse(
-                            weightController.text,
-                          );
-                          print(widget.recipeRow);
+
+                          var weight = double.tryParse(weightController.text);
+                          print(weight);
                           var t = 0;
+                          widget.recipeRow.weight =
+                              (weight != null) ? weight : 0;
+                          print(widget.recipeRow);
                         });
+                        //=================  onChanged  ===========================
                       },
                     );
                   },
@@ -122,9 +127,11 @@ class _RecipeRowAddEditState extends State<RecipeRowAddEdit> {
                             ),
                             onPressed: () {
                               var f = 0;
-                              double weight = double.parse(
+                              var parsed = double.tryParse(
                                 weightController.text,
                               );
+
+                              double weight = parsed != null ? parsed : 0;
 
                               RecipeRow row = RecipeRow(
                                 widget.recipeRow.id,
@@ -141,16 +148,16 @@ class _RecipeRowAddEditState extends State<RecipeRowAddEdit> {
                               if (widget.recipeRow.id == 0) {
                                 RecipeRowCrud.add(row).then((val) {
                                   var t2 = 0;
-                                  recipeGetX.updateRecipeRow(val);
+                                  recipeGetX.addUpdateRecipeEditRows(val);
 
-                                  Navigator.pop(context, [val]);
+                                  Navigator.pop(context);
                                 });
                               } else {
                                 RecipeRowCrud.edit(row).then((val) {
                                   var t3 = 0;
-                                  recipeGetX.updateRecipeRow(val);
+                                  recipeGetX.addUpdateRecipeEditRows(val);
 
-                                  Navigator.pop(context, [val]);
+                                  Navigator.pop(context);
                                 });
                               }
                             },
@@ -167,7 +174,7 @@ class _RecipeRowAddEditState extends State<RecipeRowAddEdit> {
                               ),
                             ),
                             onPressed: () {
-                              Navigator.pop(context, [null]);
+                              Navigator.pop(context);
                             },
                             child: Text('Cancel'),
                           ),

@@ -20,7 +20,6 @@ class ItemWidget extends StatelessWidget {
               child: Text(title ?? '', style: TextStyle(fontSize: 20)),
             ),
           ),
-          //  Padding(padding: const EdgeInsets.all(8.0), child: const Text(' : ')),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Expanded(

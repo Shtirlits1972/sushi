@@ -15,14 +15,18 @@ class RecipeCrud {
 
   static Future<Recipe> add(Recipe model) async {
     final db = await _getDatabase();
+    print(model);
+    var y = 0;
     try {
       Recipe recipe = await db.transaction<Recipe>((txn) async {
         final id = await txn.rawInsert(
-          'INSERT INTO [Recipe] (name) VALUES (?);',
-          [model.name],
+          'INSERT INTO [Recipe] (name, image) VALUES (?, ?);',
+          [model.name, model.image],
         );
-        return Recipe(id, model.name, []);
+        return Recipe(id, model.name, model.image, []);
       });
+      // model.id = await db.insert('Recipe', model.toMap());
+
       return recipe;
     } catch (e) {
       print('Ошибка при добавлении рецепта: $e');
@@ -32,16 +36,24 @@ class RecipeCrud {
     }
   }
 
+  // static Future<int> del(int id) async {
+  //   final db = await _getDatabase();
+  //   return db.delete('[Recipe]', where: 'id = ?', whereArgs: [id]);
+  // }
+
   static Future del(int id) async {
     String row_del = 'DELETE FROM [RecipeRow] WHERE recipeId = ? ; ';
-    String recipe_del = '   DELETE FROM [Recipe] WHERE id = ?; ';
+    String clear =
+        'DELETE FROM RecipeRow  WHERE recipeId NOT IN (SELECT id FROM Recipe); ';
+    String recipe_del = ' DELETE FROM [Recipe] WHERE id = ?; ';
     final db = await _getDatabase();
     try {
       // await RecipeRowCrud.delByRecipeId(id);
       int count1 = await db.rawDelete(row_del, [id]);
       int count2 = await db.rawDelete(recipe_del, [id]);
+      int count3 = await db.rawDelete(clear);
 
-      print('row delete = $count1, recipe delete = $count2 ');
+      print('row delete = $count1, recipe delete = $count2, clear = $count3 ');
     } catch (e) {
       print(e);
       rethrow;
@@ -50,13 +62,65 @@ class RecipeCrud {
     }
   }
 
+  // static Future<Recipe> edit(Recipe model) async {
+  //   final db = await _getDatabase();
+  //   db.update(
+  //     '[Recipe]',
+  //     model.toMap(),
+  //     where: 'id = ?',
+  //     whereArgs: [model.id],
+  //   );
+  //   return model;
+  // }
+
   static Future<Recipe> edit(Recipe model) async {
-    String command = 'UPDATE [Recipe] SET [name] = ? WHERE id = ?';
+    String command =
+        'UPDATE [Recipe] SET [name] = ?, [image] = ?  WHERE id = ?';
     final db = await _getDatabase();
     try {
-      int count = await db.rawUpdate(command, [model.name, model.id]);
+      int count = await db.rawUpdate(command, [
+        model.name,
+        model.image,
+        model.id,
+      ]);
       print('row updated = $count ');
       return model;
+    } catch (e) {
+      print(e);
+      rethrow;
+    } finally {
+      await db.close();
+    }
+  }
+
+  // static Future<List<Recipe>> getAll() async {
+  //   final db = await _getDatabase();
+  //   final List<Map<String, dynamic>> maps = await db.query('[Recipe]');
+  //   return List.generate(maps.length, (i) {
+  //     return Recipe.fromMap(maps[i]);
+  //   });
+  // }
+
+  static Future<Recipe> getById(int id) async {
+    final db = await _getDatabase();
+
+    try {
+      List<Map<dynamic, dynamic>> map = await db.query(
+        'SELECT id, [name], [image] FROM [Recipe] WHERE id = ?'[id],
+      );
+
+      Recipe recipe = Recipe.fromMap(map.first);
+
+      List<Map<dynamic, dynamic>> mapRow = await db.query(
+        'SELECT id, recipeId, ingridientId, [name], weight  FROM [RecipeRowView]  WHERE recipeId = ?'[id],
+      );
+
+      mapRow.forEach((item) {
+        RecipeRow row = RecipeRow.fromMap(item);
+        recipe.RecipeRows.add(row);
+      });
+
+      return recipe;
     } catch (e) {
       print(e);
       rethrow;
@@ -70,7 +134,9 @@ class RecipeCrud {
     final db = await _getDatabase();
 
     try {
-      List<Map> list = await db.rawQuery('SELECT id, [name] FROM [Recipe] ;');
+      List<Map> list = await db.rawQuery(
+        'SELECT id, [name], [image] FROM [Recipe] ;',
+      );
 
       List<RecipeRow> recipeRow = await RecipeRowCrud.getAll();
 

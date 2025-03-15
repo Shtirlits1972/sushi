@@ -24,10 +24,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (context) => RecipeForm());
 
       case RecipeAddEditForm.route:
-        final Recipe recipe = routeSettings.arguments as Recipe;
-        return MaterialPageRoute(
-          builder: (context) => RecipeAddEditForm(model: recipe),
-        );
+        // final Recipe recipe = routeSettings.arguments as Recipe;
+        return MaterialPageRoute(builder: (context) => RecipeAddEditForm());
 
       case RecipeRowAddEdit.route:
         final RecipeRow recipe_row = routeSettings.arguments as RecipeRow;

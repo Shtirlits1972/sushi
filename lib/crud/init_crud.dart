@@ -8,7 +8,7 @@ class InitCrud {
         'CREATE TABLE [Ingridient](  [id] INTEGER PRIMARY KEY AUTOINCREMENT,  [name] NVARCHAR );  ';
 
     String RecipeTab =
-        'CREATE TABLE [Recipe] ( [id] INTEGER PRIMARY KEY AUTOINCREMENT,  [name] NVARCHAR );   ';
+        'CREATE TABLE [Recipe] ( [id] INTEGER PRIMARY KEY AUTOINCREMENT,  [name] NVARCHAR,  [image] BLOB );   ';
 
     String RecipeRow =
         '      CREATE TABLE [RecipeRow](  ' +
@@ -31,6 +31,25 @@ class InitCrud {
         ' RecipeRow  R ' +
         ' LEFT JOIN Ingridient I ON I.id = R.ingridientId;  ';
 
+    String ingridient_1 =
+        'INSERT INTO Ingridient ([name]) VALUES ("картошка");';
+    String ingridient_2 = 'INSERT INTO Ingridient ([name]) VALUES ("лосось");';
+    String ingridient_3 = 'INSERT INTO Ingridient ([name]) VALUES ("огурец");';
+    String ingridient_31 =
+        'INSERT INTO Ingridient ([name]) VALUES ("помидор");';
+    String ingridient_4 = 'INSERT INTO Ingridient ([name]) VALUES ("рис");';
+    String ingridient_5 = 'INSERT INTO Ingridient ([name]) VALUES ("оливки");';
+    String ingridient_6 =
+        'INSERT INTO Ingridient ([name]) VALUES ("сыр пармезан");';
+    String ingridient_7 = 'INSERT INTO Ingridient ([name]) VALUES ("нори");';
+
+    String ingridient_8 = 'INSERT INTO Ingridient ([name]) VALUES ("кетчуп");';
+    String ingridient_9 = 'INSERT INTO Ingridient ([name]) VALUES ("мука");';
+    String ingridient_10 =
+        'INSERT INTO Ingridient ([name]) VALUES ("колбаса");';
+    String ingridient_11 =
+        'INSERT INTO Ingridient ([name]) VALUES ("мясо краба");';
+
     getDatabasesPath().then((String strPath) {
       String path = join(strPath, dbName);
       try {
@@ -42,6 +61,20 @@ class InitCrud {
 
             await db.execute(RecipeRow);
             await db.execute(RecipeRowView);
+            //======================================
+            await db.execute(ingridient_1);
+            await db.execute(ingridient_2);
+            await db.execute(ingridient_3);
+            await db.execute(ingridient_31);
+            await db.execute(ingridient_4);
+            await db.execute(ingridient_5);
+            await db.execute(ingridient_6);
+            await db.execute(ingridient_7);
+            await db.execute(ingridient_8);
+            await db.execute(ingridient_9);
+            await db.execute(ingridient_10);
+            await db.execute(ingridient_11);
+            //==========================================
 
             print('DB created');
           },

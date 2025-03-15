@@ -7,6 +7,7 @@ import 'package:sushi_sql/model/recipe.dart';
 import 'package:sushi_sql/widget/driwer.dart';
 import 'package:sushi_sql/widget/item_widget.dart';
 import 'package:sushi_sql/widget/snack_bar.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RecipeForm extends StatefulWidget {
   RecipeForm({Key? key}) : super(key: key);
@@ -19,13 +20,13 @@ class RecipeForm extends StatefulWidget {
 
 class _RecipeFormState extends State<RecipeForm> {
   // List<Recipe> list = [];
-  final RecipeController controllerGetX = Get.put(RecipeController());
+  final RecipeController recipeGetX = Get.put(RecipeController());
 
   @override
   void initState() {
     super.initState();
     RecipeCrud.getAll().then((value) {
-      controllerGetX.setRecipe(value);
+      recipeGetX.setRecipeList(value);
     });
   }
 
@@ -50,11 +51,8 @@ class _RecipeFormState extends State<RecipeForm> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(
-                context,
-                RecipeAddEditForm.route,
-                arguments: Recipe.empty(),
-              );
+              Navigator.pushNamed(context, RecipeAddEditForm.route);
+              recipeGetX.setRecipeEdit(Recipe.empty());
             },
             icon: Icon(Icons.add_circle_rounded),
           ),
@@ -64,30 +62,37 @@ class _RecipeFormState extends State<RecipeForm> {
       body: Obx(() {
         return Center(
           child:
-              controllerGetX.recipes.isEmpty
+              recipeGetX.recipes.isEmpty
                   ? Text('No Data')
                   : ListView.separated(
                     separatorBuilder:
                         (context, index) => const Divider(thickness: 1),
-                    itemCount: controllerGetX.recipes.length,
+                    itemCount: recipeGetX.recipes.length,
                     itemBuilder: (context, index) {
                       //=========================================
-                      List<ItemWidget> listItem = [];
+                      List<Widget> listItem = [];
 
                       for (
                         int i = 0;
-                        i < controllerGetX.recipes[index].RecipeRows.length;
+                        i < recipeGetX.recipes[index].RecipeRows.length;
                         i++
                       ) {
                         listItem.add(
                           ItemWidget(
-                            title:
-                                controllerGetX
-                                    .recipes[index]
-                                    .RecipeRows[i]
-                                    .name,
+                            title: recipeGetX.recipes[index].RecipeRows[i].name,
                             content:
-                                '${controllerGetX.recipes[index].RecipeRows[i].weight}',
+                                '${recipeGetX.recipes[index].RecipeRows[i].weight}',
+                          ),
+                        );
+                      }
+
+                      if (recipeGetX.recipes[index].image != null) {
+                        listItem.add(
+                          ExpansionTile(
+                            title: Text('image'),
+                            children: [
+                              Image.memory(recipeGetX.recipes[index].image!),
+                            ],
                           ),
                         );
                       }
@@ -95,13 +100,13 @@ class _RecipeFormState extends State<RecipeForm> {
 
                       return Dismissible(
                         onDismissed: (direction) {
-                          String name = controllerGetX.recipes[index].name;
+                          String name = recipeGetX.recipes[index].name;
 
-                          RecipeCrud.del(controllerGetX.recipes[index].id);
+                          RecipeCrud.del(recipeGetX.recipes[index].id);
 
                           setState(() {
-                            controllerGetX.removeRecipe(
-                              controllerGetX.recipes[index].id,
+                            recipeGetX.removeRecipe(
+                              recipeGetX.recipes[index].id,
                             );
                           });
 
@@ -110,16 +115,17 @@ class _RecipeFormState extends State<RecipeForm> {
                             context,
                           ).showSnackBar(snackBarOK('$name is deleted!'));
                         },
-                        key: Key(controllerGetX.recipes[index].id.toString()),
+                        key: Key(recipeGetX.recipes[index].id.toString()),
                         child: InkWell(
-                          onLongPress: () {
-                            Navigator.pushNamed(
+                          onLongPress: () async {
+                            recipeGetX.setRecipeEdit(recipeGetX.recipes[index]);
+
+                            await Navigator.pushNamed(
                               context,
                               RecipeAddEditForm.route,
-                              arguments: controllerGetX.recipes[index],
-                            ).then((val) {
-                              setState(() {});
-                            });
+                            );
+
+                            // setState(() {});
                           },
                           child: ExpansionTile(
                             children: listItem,
@@ -128,15 +134,13 @@ class _RecipeFormState extends State<RecipeForm> {
                               child: CircleAvatar(
                                 radius: 20,
                                 backgroundColor: Theme.of(context).primaryColor,
-                                child: Text(
-                                  '${controllerGetX.recipes[index].id}',
-                                ),
+                                child: Text('${recipeGetX.recipes[index].id}'),
                               ),
                             ),
                             // contentPadding: EdgeInsets.zero,
                             dense: true,
                             title: Text(
-                              '${controllerGetX.recipes[index].name}',
+                              '${recipeGetX.recipes[index].name}',
                               style: const TextStyle(fontSize: 20),
                             ),
                           ),

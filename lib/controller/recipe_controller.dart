@@ -5,19 +5,49 @@ import 'package:sushi_sql/model/recipe_row.dart';
 class RecipeController extends GetxController {
   // Реактивный список
   var recipes = <Recipe>[].obs;
+  Rx<Recipe> recipeEdit = Recipe.empty().obs;
 
-  setRecipe(List<Recipe> newList) {
+  Rx<Recipe> get getRegipeEdit => recipeEdit;
+
+  setRecipeEdit(Recipe newRecipe) {
+    recipeEdit.value = newRecipe;
+  }
+
+  addUpdateRecipeEditRows(RecipeRow row) {
+    bool flag = true;
+
+    for (int i = 0; i < recipeEdit.value.RecipeRows.length; i++) {
+      if (recipeEdit.value.RecipeRows[i].id == row.id) {
+        recipeEdit.value.RecipeRows[i] = row;
+        flag = false;
+        break;
+      }
+    }
+
+    if (flag) {
+      recipeEdit.value.RecipeRows.add(row);
+    }
+
+    addOrUpdateRecipe(recipeEdit.value);
+  }
+
+  //=================================================================================
+  setRecipeList(List<Recipe> newList) {
     recipes.value = newList;
   }
 
   // Добавить
-  void addRecipe(Recipe Recipe) {
-    recipes.add(Recipe);
-  }
+  // void addRecipeToList(Recipe Recipe) {
+  //   recipes.add(Recipe);
+  // }
 
   // Удалить  по id
   void removeRecipe(int id) {
     recipes.removeWhere((item) => item.id == id);
+  }
+
+  Recipe getRecipeById(int id) {
+    return recipes.firstWhere((item) => item.id == id);
   }
 
   //  обновить RecipeRow
@@ -41,12 +71,17 @@ class RecipeController extends GetxController {
   }
 
   // Обновить
-  void updateRecipe(Recipe newRecipe) {
+  void addOrUpdateRecipe(Recipe newRecipe) {
+    bool flag = true;
     for (int i = 0; i < recipes.length; i++) {
       if (recipes[i].id == newRecipe.id) {
         recipes[i] = newRecipe;
+        flag = false;
         break;
       }
+    }
+    if (flag) {
+      recipes.add(newRecipe);
     }
   }
 
