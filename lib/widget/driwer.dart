@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sushi_sql/form/ingridient_form.dart';
 import 'package:sushi_sql/form/recipe_form.dart';
+import 'package:sushi_sql/form/sets_view_form.dart';
 
 class DrawerMenu extends StatefulWidget {
   const DrawerMenu({Key? key}) : super(key: key);
@@ -27,7 +28,16 @@ class _DrawerMenuState extends State<DrawerMenu> {
               Navigator.pushNamed(context, RecipeForm.route);
             },
           ),
+
           //===================================
+          const Divider(color: Colors.grey, thickness: 1),
+          ListTile(
+            title: Text('Sets'),
+            onTap: () {
+              Navigator.pushNamed(context, SetsViewForm.route);
+            },
+          ),
+
           const Divider(color: Colors.grey, thickness: 1),
           ListTile(
             title: Text('Ingridients'),
@@ -36,7 +46,6 @@ class _DrawerMenuState extends State<DrawerMenu> {
             },
           ),
 
-          //  RecipeForm
           const Divider(color: Colors.grey, thickness: 1),
           ListTile(
             title: Text('Cancel'),

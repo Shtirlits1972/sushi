@@ -25,7 +25,6 @@ class RecipeCrud {
         );
         return Recipe(id, model.name, model.image, []);
       });
-      // model.id = await db.insert('Recipe', model.toMap());
 
       return recipe;
     } catch (e) {
@@ -35,11 +34,6 @@ class RecipeCrud {
       await db.close();
     }
   }
-
-  // static Future<int> del(int id) async {
-  //   final db = await _getDatabase();
-  //   return db.delete('[Recipe]', where: 'id = ?', whereArgs: [id]);
-  // }
 
   static Future del(int id) async {
     String row_del = 'DELETE FROM [RecipeRow] WHERE recipeId = ? ; ';
@@ -62,17 +56,6 @@ class RecipeCrud {
     }
   }
 
-  // static Future<Recipe> edit(Recipe model) async {
-  //   final db = await _getDatabase();
-  //   db.update(
-  //     '[Recipe]',
-  //     model.toMap(),
-  //     where: 'id = ?',
-  //     whereArgs: [model.id],
-  //   );
-  //   return model;
-  // }
-
   static Future<Recipe> edit(Recipe model) async {
     String command =
         'UPDATE [Recipe] SET [name] = ?, [image] = ?  WHERE id = ?';
@@ -92,14 +75,6 @@ class RecipeCrud {
       await db.close();
     }
   }
-
-  // static Future<List<Recipe>> getAll() async {
-  //   final db = await _getDatabase();
-  //   final List<Map<String, dynamic>> maps = await db.query('[Recipe]');
-  //   return List.generate(maps.length, (i) {
-  //     return Recipe.fromMap(maps[i]);
-  //   });
-  // }
 
   static Future<Recipe> getById(int id) async {
     final db = await _getDatabase();

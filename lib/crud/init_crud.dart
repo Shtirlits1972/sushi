@@ -31,6 +31,30 @@ class InitCrud {
         ' RecipeRow  R ' +
         ' LEFT JOIN Ingridient I ON I.id = R.ingridientId;  ';
 
+    String setsTable =
+        'CREATE TABLE [Sets](  [id] INTEGER PRIMARY KEY AUTOINCREMENT, [name] NVARCHAR );  ';
+
+    String SetsRowT =
+        '      CREATE TABLE [SetsRow](  ' +
+        ' [id] INTEGER PRIMARY KEY AUTOINCREMENT,  ' +
+        ' [setsId] NOT NULL REFERENCES [Sets]([id]), ' +
+        ' [recipeId] NOT NULL REFERENCES [Recipe]([id]), ' +
+        ' [amount] INTEGER DEFAULT 0,  ' +
+        ' UNIQUE([setsId], [recipeId] ) ' +
+        ' ); ';
+
+    String SetsRowView =
+        ' CREATE VIEW SetsRowView AS ' +
+        ' SELECT  ' +
+        '  S.[id] ,  ' +
+        '   S.[setsId] ,  ' +
+        '   S.[recipeId] ,  ' +
+        '   S.[amount], ' +
+        '   R.name   ' +
+        '   FROM  ' +
+        ' SetsRow  S ' +
+        ' LEFT JOIN Recipe R ON S.recipeId = R.id;  ';
+
     String ingridient_1 =
         'INSERT INTO Ingridient ([name]) VALUES ("картошка");';
     String ingridient_2 = 'INSERT INTO Ingridient ([name]) VALUES ("лосось");';
@@ -57,10 +81,14 @@ class InitCrud {
           path,
           onCreate: (db, version) async {
             await db.execute(IngridientTab);
+            //--------------------------------------
             await db.execute(RecipeTab);
-
             await db.execute(RecipeRow);
             await db.execute(RecipeRowView);
+            //--------------------------------------
+            await db.execute(setsTable);
+            await db.execute(SetsRowT);
+            await db.execute(SetsRowView);
             //======================================
             await db.execute(ingridient_1);
             await db.execute(ingridient_2);
@@ -82,6 +110,7 @@ class InitCrud {
         );
       } catch (e) {
         print(e);
+        int y = 0;
       }
     });
   }

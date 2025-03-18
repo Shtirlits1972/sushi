@@ -69,35 +69,6 @@ class _RecipeFormState extends State<RecipeForm> {
                         (context, index) => const Divider(thickness: 1),
                     itemCount: recipeGetX.recipes.length,
                     itemBuilder: (context, index) {
-                      //=========================================
-                      List<Widget> listItem = [];
-
-                      for (
-                        int i = 0;
-                        i < recipeGetX.recipes[index].RecipeRows.length;
-                        i++
-                      ) {
-                        listItem.add(
-                          ItemWidget(
-                            title: recipeGetX.recipes[index].RecipeRows[i].name,
-                            content:
-                                '${recipeGetX.recipes[index].RecipeRows[i].weight}',
-                          ),
-                        );
-                      }
-
-                      if (recipeGetX.recipes[index].image != null) {
-                        listItem.add(
-                          ExpansionTile(
-                            title: Text('image'),
-                            children: [
-                              Image.memory(recipeGetX.recipes[index].image!),
-                            ],
-                          ),
-                        );
-                      }
-                      //===============================================
-
                       return Dismissible(
                         onDismissed: (direction) {
                           String name = recipeGetX.recipes[index].name;
@@ -119,16 +90,12 @@ class _RecipeFormState extends State<RecipeForm> {
                         child: InkWell(
                           onLongPress: () async {
                             recipeGetX.setRecipeEdit(recipeGetX.recipes[index]);
-
                             await Navigator.pushNamed(
                               context,
                               RecipeAddEditForm.route,
                             );
-
-                            // setState(() {});
                           },
                           child: ExpansionTile(
-                            children: listItem,
                             leading: Padding(
                               padding: const EdgeInsets.all(4.0),
                               child: CircleAvatar(
@@ -141,8 +108,62 @@ class _RecipeFormState extends State<RecipeForm> {
                             dense: true,
                             title: Text(
                               '${recipeGetX.recipes[index].name}',
-                              style: const TextStyle(fontSize: 20),
+                              style: const TextStyle(fontSize: 24),
                             ),
+                            children: [
+                              SizedBox(
+                                height:
+                                    (recipeGetX
+                                            .recipes[index]
+                                            .RecipeRows
+                                            .length *
+                                        70),
+                                child: ListView.separated(
+                                  separatorBuilder:
+                                      (context, index2) =>
+                                          const Divider(thickness: 1),
+                                  itemCount:
+                                      recipeGetX
+                                          .recipes[index]
+                                          .RecipeRows
+                                          .length,
+                                  itemBuilder: (context, index2) {
+                                    return ListTile(
+                                      title: Text(
+                                        recipeGetX
+                                            .recipes[index]
+                                            .RecipeRows[index2]
+                                            .name,
+                                        style: const TextStyle(fontSize: 18),
+                                      ),
+                                      trailing: Text(
+                                        '${recipeGetX.recipes[index].RecipeRows[index2].weight}',
+                                        style: const TextStyle(fontSize: 18),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              // const Divider(thickness: 1),
+                              Container(
+                                child:
+                                    recipeGetX.recipes[index].image != null
+                                        ? ExpansionTile(
+                                          title: Text('image'),
+                                          children: [
+                                            Container(
+                                              child: Image.memory(
+                                                recipeGetX
+                                                    .recipes[index]
+                                                    .image!,
+                                                height: 100,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                        : null,
+                              ),
+                            ],
                           ),
                         ),
                       );

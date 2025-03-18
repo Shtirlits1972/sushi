@@ -1,9 +1,11 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:sushi_sql/constants.dart';
-import 'package:sushi_sql/model/ingridient.dart';
+import 'package:sushi_sql/crud/sets_row_crud.dart';
+import 'package:sushi_sql/model/sets.dart';
 import 'package:path/path.dart';
+import 'package:sushi_sql/model/sets_row.dart';
 
-class IngridientCrud {
+class SetsCrud {
   // Кэшируем путь к базе данных, чтобы не вычислять его каждый раз
   static Future<Database> _getDatabase() async {
     final dbPath = await getDatabasesPath();
@@ -11,17 +13,16 @@ class IngridientCrud {
     return openDatabase(path, version: 1);
   }
 
-  static Future<Ingridient> add(Ingridient model) async {
+  static Future<Sets> add(Sets model) async {
     final db = await _getDatabase();
     try {
-      Ingridient ingridient = await db.transaction<Ingridient>((txn) async {
+      return await db.transaction<Sets>((txn) async {
         final id = await txn.rawInsert(
-          'INSERT INTO [Ingridient] (name) VALUES (?);',
+          'INSERT INTO [Sets] (name) VALUES (?);',
           [model.name],
         );
-        return Ingridient(id, model.name);
+        return Sets(id, model.name, []);
       });
-      return ingridient;
     } catch (e) {
       print('Ошибка при добавлении : $e');
       rethrow; // Повторно выбрасываем исключение, чтобы обработать его на уровне выше
@@ -31,9 +32,12 @@ class IngridientCrud {
   }
 
   static Future del(int id) async {
-    String command = 'DELETE FROM [Ingridient] WHERE id = ?';
+    String deleteRows = 'DELETE FROM [SetsRow] WHERE recipeId = ? ;';
+
+    String command = 'DELETE FROM [Sets] WHERE id = ?';
     final db = await _getDatabase();
     try {
+      int count2 = await db.rawDelete(deleteRows, [id]);
       int count = await db.rawDelete(command, [id]);
       print('row delete = $count ');
     } catch (e) {
@@ -44,8 +48,8 @@ class IngridientCrud {
     }
   }
 
-  static Future<Ingridient> edit(Ingridient model) async {
-    String command = 'UPDATE [Ingridient] SET [name] = ? WHERE id = ?';
+  static Future<Sets> edit(Sets model) async {
+    String command = 'UPDATE [Sets] SET [name] = ? WHERE id = ?';
     final db = await _getDatabase();
     try {
       int count = await db.rawUpdate(command, [model.name, model.id]);
@@ -59,25 +63,31 @@ class IngridientCrud {
     }
   }
 
-  static Future<List<Ingridient>> getAll() async {
-    List<Ingridient> listIngridient = [];
+  static Future<List<Sets>> getAll() async {
+    List<Sets> listSets = [];
     final db = await _getDatabase();
 
     try {
-      List<Map> list = await db.rawQuery(
-        'SELECT id, [name] FROM [Ingridient] ;',
-      );
+      List<Map> list = await db.rawQuery('SELECT id, [name] FROM [Sets] ;');
+
+      List<SetsRow> setsRow = await SetsRowCrud.getAll();
 
       for (int i = 0; i < list.length; i++) {
-        Ingridient pr = Ingridient.fromMap(list[i]);
-        listIngridient.add(pr);
+        Sets set = Sets.fromMap(list[i]);
+        for (int j = 0; j < setsRow.length; j++) {
+          if (setsRow[j].setsId == set.id) {
+            set.setsRow.add(setsRow[j]);
+          }
+        }
+        listSets.add(set);
       }
+
+      return listSets;
     } catch (e) {
       print(e);
       rethrow;
     } finally {
       await db.close();
     }
-    return listIngridient;
   }
 }

@@ -1,9 +1,9 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:sushi_sql/constants.dart';
 import 'package:path/path.dart';
-import 'package:sushi_sql/model/recipe_row.dart';
+import 'package:sushi_sql/model/sets_row.dart';
 
-class RecipeRowCrud {
+class SetsRowCrud {
   // Кэшируем путь к базе данных, чтобы не вычислять его каждый раз
   static Future<Database> _getDatabase() async {
     final dbPath = await getDatabasesPath();
@@ -11,26 +11,26 @@ class RecipeRowCrud {
     return openDatabase(path, version: 1);
   }
 
-  static Future<RecipeRow> add(RecipeRow model) async {
+  static Future<SetsRow> add(SetsRow model) async {
     final db = await _getDatabase();
     try {
-      RecipeRow reciperow = await db.transaction<RecipeRow>((txn) async {
+      SetsRow setsrow = await db.transaction<SetsRow>((txn) async {
         final id = await txn.rawInsert(
-          'INSERT INTO [RecipeRow] (recipeId, ingridientId, weight) VALUES (?,?,?); ',
-          [model.recipeId, model.ingridientId, model.weight],
+          'INSERT INTO [SetsRow] (setsId, recipeId, amount) VALUES (?,?,?); ',
+          [model.setsId, model.recipeId, model.amount],
         );
         var y = 0;
-        return RecipeRow(
+        return SetsRow(
           id,
+          model.setsId,
           model.recipeId,
-          model.ingridientId,
           model.name,
-          model.weight,
+          model.amount,
         );
       });
-      return reciperow;
+      return setsrow;
     } catch (e) {
-      print('Ошибка при добавлении рецепта: $e');
+      print('Ошибка при добавлении сета: $e');
       rethrow; // Повторно выбрасываем исключение, чтобы обработать его на уровне выше
     } finally {
       await db.close();
@@ -38,7 +38,7 @@ class RecipeRowCrud {
   }
 
   static Future del(int id) async {
-    String command = 'DELETE FROM [RecipeRow] WHERE id = ?';
+    String command = 'DELETE FROM [SetsRow] WHERE id = ?';
     final db = await _getDatabase();
     try {
       int count = await db.rawDelete(command, [id]);
@@ -51,15 +51,15 @@ class RecipeRowCrud {
     }
   }
 
-  static Future<RecipeRow> edit(RecipeRow model) async {
+  static Future<SetsRow> edit(SetsRow model) async {
     String command =
-        'UPDATE [RecipeRow] SET recipeId = ?, ingridientId = ?, weight = ? WHERE id = ?';
+        'UPDATE [SetsRow] SET setsId = ?, recipeId = ?, amount = ? WHERE id = ?';
     final db = await _getDatabase();
     try {
       int count = await db.rawUpdate(command, [
+        model.setsId,
         model.recipeId,
-        model.ingridientId,
-        model.weight,
+        model.amount,
         model.id,
       ]);
       print('row updated = $count ');
@@ -72,18 +72,18 @@ class RecipeRowCrud {
     }
   }
 
-  static Future<List<RecipeRow>> getAll() async {
-    List<RecipeRow> listRecipeRow = [];
+  static Future<List<SetsRow>> getAll() async {
+    List<SetsRow> listSetsRow = [];
     final db = await _getDatabase();
 
     try {
       List<Map> list = await db.rawQuery(
-        'SELECT id, recipeId, ingridientId, [name], weight  FROM [RecipeRowView] ',
+        'SELECT id, setsId, recipeId, [name], amount  FROM [SetsRowView] ',
       );
 
       for (int i = 0; i < list.length; i++) {
-        RecipeRow pr = RecipeRow.fromMap(list[i]);
-        listRecipeRow.add(pr);
+        SetsRow pr = SetsRow.fromMap(list[i]);
+        listSetsRow.add(pr);
       }
     } catch (e) {
       print(e);
@@ -91,22 +91,22 @@ class RecipeRowCrud {
     } finally {
       await db.close();
     }
-    return listRecipeRow;
+    return listSetsRow;
   }
 
-  static Future<List<RecipeRow>> getByRecipeId(int recipeId) async {
-    List<RecipeRow> listRecipeRow = [];
+  static Future<List<SetsRow>> getBySetsId(int recipeId) async {
+    List<SetsRow> listSetsRow = [];
     final db = await _getDatabase();
 
     try {
       List<Map> list = await db.rawQuery(
-        'SELECT id, recipeId, ingridientId, [name], weight  FROM [RecipeRowView] WHERE recipeId = ? ;',
+        'SELECT id, setsId, recipeId, [name], amount   FROM [SetsRowView] WHERE setsId = ? ;',
         [recipeId],
       );
 
       for (int i = 0; i < list.length; i++) {
-        RecipeRow pr = RecipeRow.fromMap(list[i]);
-        listRecipeRow.add(pr);
+        SetsRow pr = SetsRow.fromMap(list[i]);
+        listSetsRow.add(pr);
       }
     } catch (e) {
       print(e);
@@ -114,6 +114,6 @@ class RecipeRowCrud {
     } finally {
       await db.close();
     }
-    return listRecipeRow;
+    return listSetsRow;
   }
 }
